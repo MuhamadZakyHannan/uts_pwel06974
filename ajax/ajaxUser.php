@@ -1,21 +1,19 @@
 <?php
-// Memanggil file berisi fungsi-fungsi yang sering dipakai
+//memanggil file berisi fungsi2 yang sering dipakai
 require "../fungsi.php";
 require "../head.html";
-
 $keyword = $_GET["keyword"];
-$jmlDataPerHal = 5;
-
-/* ---- Cetak data per halaman --------- */
-// Pencarian data pada tabel user
-$sql = "SELECT * FROM user 
-        WHERE iduser LIKE '%$keyword%' 
-        OR namauser LIKE '%$keyword%' 
-        OR email LIKE '%$keyword%'";
+$jmlDataPerHal = 2;
+/*	---- cetak data per halaman ---------	*/
+//--------- konfigurasi
+//pencarian data
+$sql = "select * from user where  iduser like'%$keyword%' or
+							username like '%$keyword%' or
+							status like '%$keyword%'";
 $qry = mysqli_query($koneksi, $sql) or die(mysqli_error($koneksi));
 $jmlData = mysqli_num_rows($qry);
-
-// Hitung jumlah halaman
+// CEIL() digunakan untuk mengembalikan nilai integer terkecil yang lebih besar dari 
+//atau sama dengan angka.
 $jmlHal = ceil($jmlData / $jmlDataPerHal);
 if (isset($_GET['hal'])) {
   $halAktif = $_GET['hal'];
@@ -25,31 +23,31 @@ if (isset($_GET['hal'])) {
 
 $awalData = ($jmlDataPerHal * $halAktif) - $jmlDataPerHal;
 
-// Jika tabel data kosong
+//Jika tabel data kosong
 $kosong = false;
 if (!$jmlData) {
   $kosong = true;
 }
 
-// Klausa LIMIT untuk membatasi jumlah baris yang dikembalikan
-$sql = "SELECT * FROM user 
-        WHERE iduser LIKE '%$keyword%' 
-        OR namauser LIKE '%$keyword%' 
-        OR email LIKE '%$keyword%' 
-        LIMIT $awalData, $jmlDataPerHal";
+//Klausa LIMIT digunakan untuk membatasi jumlah baris yang dikembalikan oleh pernyataan SELECT
+//data berdasar pencarian atau tidak
 
-// Ambil data untuk ditampilkan
+$sql = "select * from user where iduser like'%$keyword%' or
+									username like '%$keyword%' or
+									status like '%$keyword%'
+									limit $awalData,$jmlDataPerHal";
+
+//$sql="select * from mhs limit $awalData,$jmlDataPerHal";		
+//Ambil data untuk ditampilkan
 $hasil = mysqli_query($koneksi, $sql) or die(mysqli_error($koneksi));
-?>
-
-<!-- Cetak data dengan tampilan tabel -->
+?><!-- Cetak data dengan tampilan tabel -->
 <table class="table table-hover">
   <thead class="thead-light">
     <tr>
       <th>No.</th>
       <th>ID User</th>
-      <th>Nama</th>
-      <th>Email</th>
+      <th>Username</th>
+      <th>Status</th>
       <th>Aksi</th>
     </tr>
   </thead>
@@ -59,13 +57,13 @@ $hasil = mysqli_query($koneksi, $sql) or die(mysqli_error($koneksi));
     while ($row = mysqli_fetch_assoc($hasil)) {
     ?>
       <tr>
-        <td><?php echo $no ?></td>
-        <td><?php echo $row["iduser"] ?></td>
-        <td><?php echo $row["namauser"] ?></td>
-        <td><?php echo $row["email"] ?></td>
+        <td><?php echo $no; ?></td>
+        <td><?php echo $row["iduser"]; ?></td>
+        <td><?php echo $row["username"]; ?></td>
+        <td><?php echo $row["status"]; ?></td>
         <td>
-          <a class="btn btn-outline-primary btn-sm" href="editUser.php?kode=<?php echo $row['iduser'] ?>">Edit</a>
-          <a class="btn btn-outline-danger btn-sm" href="hpsUser.php?kode=<?php echo $row["iduser"] ?>" id="linkHps" onclick="return confirm('Yakin dihapus?')">Hapus</a>
+          <a class="btn btn-outline-primary btn-sm" href="editUser.php?kode=<?php echo $row['iduser']; ?>">Edit</a>
+          <a class="btn btn-outline-danger btn-sm" href="hpsUser.php?kode=<?php echo $row["iduser"]; ?>" id="linkHps" onclick="return confirm('Yakin dihapus nih?')">Hapus</a>
         </td>
       </tr>
     <?php

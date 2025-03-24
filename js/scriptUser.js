@@ -1,21 +1,41 @@
-// Ambil elemen yang dibutuhkan
-var keyword = document.getElementById("keyword");
-var tombolCari = document.getElementById("tombol-cari");
-var container = document.getElementById("container");
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("scriptUser.js berhasil dimuat dan DOM siap!");
 
-// Tambahkan event ketika keyword diketik
-keyword.addEventListener("keyup", function () {
-  // Buat objek AJAX
-  var xhr = new XMLHttpRequest();
+  // Ambil elemen input pencarian
+  var keyword = document.getElementById("keyword");
+  var container = document.getElementById("container");
 
-  // Cek kesiapan AJAX
-  xhr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      container.innerHTML = xhr.responseText;
-    }
-  };
+  // Cek apakah elemen ditemukan
+  if (!keyword) {
+    console.error("Elemen dengan ID 'keyword' tidak ditemukan! Pastikan ada <input id='keyword'> di HTML.");
+    return;
+  }
+  if (!container) {
+    console.error("Elemen dengan ID 'container' tidak ditemukan! Pastikan ada <div id='container'> di HTML.");
+    return;
+  }
 
-  // Panggil `ajaxUser.php` untuk memproses pencarian di tabel `user`
-  xhr.open("GET", "ajax/ajaxUser.php?keyword=" + keyword.value, true);
-  xhr.send();
+  // Tambahkan event keyup untuk AJAX pencarian
+  keyword.addEventListener("keyup", function () {
+    console.log("Event keyup terdeteksi! Nilai input:", keyword.value);
+
+    // Buat objek AJAX
+    var xhr = new XMLHttpRequest();
+
+    // Cek status request
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          console.log("Response AJAX diterima!");
+          container.innerHTML = xhr.responseText;
+        } else {
+          console.error("Terjadi kesalahan AJAX: " + xhr.status);
+        }
+      }
+    };
+
+    // Kirim request ke `ajax/ajaxUser.php`
+    xhr.open("GET", "ajax/ajaxUser.php?keyword=" + encodeURIComponent(keyword.value), true);
+    xhr.send();
+  });
 });

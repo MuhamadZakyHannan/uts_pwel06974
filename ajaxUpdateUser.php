@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Sistem Informasi Akademik::Daftar Pengguna</title>
     <meta charset="utf-8">
@@ -10,6 +11,7 @@
     <script src="bootstrap4/js/bootstrap.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 </head>
+
 <body>
     <?php
     require "fungsi.php";
@@ -17,7 +19,6 @@
 
     $jmlDataPerHal = 5;
 
-    // Proses pencarian
     $cari = isset($_POST['cari']) ? $_POST['cari'] : '';
     $sql = "SELECT * FROM user";
     if (!empty($cari)) {
@@ -31,11 +32,10 @@
     $awalData = ($jmlDataPerHal * $halAktif) - $jmlDataPerHal;
     $kosong = ($jmlData == 0);
 
-    // Ambil data dengan limit
     $sql .= " LIMIT $awalData, $jmlDataPerHal";
     $hasil = mysqli_query($koneksi, $sql) or die(mysqli_error($koneksi));
     ?>
-    
+
     <div class="utama">
         <h2 class="text-center">Daftar Pengguna</h2>
         <div class="text-center">
@@ -46,11 +46,12 @@
         </span>
         <span class="float-right">
             <form action="" method="post" class="form-inline">
-                <input class="form-control mr-2 ml-2" type="text" name="cari" placeholder="Cari pengguna..." autofocus autocomplete="off">
                 <button class="btn btn-success" type="submit">Cari</button>
+                <input class="form-control mr-2 ml-2" type="text" id="keyword" name="cari" placeholder="Cari pengguna..." autofocus autocomplete="off">
             </form>
         </span>
         <br><br>
+
 
         <ul class="pagination">
             <?php
@@ -105,4 +106,5 @@
     </div>
     <script src="js/scriptUser.js"></script>
 </body>
+
 </html>

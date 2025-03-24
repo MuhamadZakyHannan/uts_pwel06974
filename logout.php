@@ -7,6 +7,5 @@ session_unset();
 
 /* mengakhiri session */
 session_destroy();
-header("location: index.php");
+header("location: index1.php");
 exit;
-?>
