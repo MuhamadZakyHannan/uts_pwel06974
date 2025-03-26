@@ -39,7 +39,7 @@
   ?>
 
   <div class="utama">
-    <h2 class="mb-3 text-center">EDIT DATA PENGGUNA</h2>
+    <h2 class="mb-3 text-center">Edit Data User</h2>
     <div class="row">
       <div class="col-sm-9">
         <form id="editForm" enctype="multipart/form-data" method="post" action="sv_editUser.php">

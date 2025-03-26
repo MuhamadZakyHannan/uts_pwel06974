@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Sistem Informasi Akademik::Daftar Pengguna</title>
+    <title>Sistem Informasi Akademik::Daftar User</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap533/css/bootstrap.css">
