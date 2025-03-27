@@ -118,7 +118,7 @@
       </div>
       <div class="form-group">
         <label for="status">Status:</label>
-        <input class="form-control" type="text" name="status" id="status">
+        <input class="form-control" type="text" name="status" id="status" required>
       </div>
       <div>
         <button type="submit" class="btn btn-primary" value="Simpan">Simpan</button>
