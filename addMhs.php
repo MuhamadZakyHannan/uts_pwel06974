@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -24,12 +25,57 @@
 			margin-top: 15px;
 		}
 	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="card">
+			<div class="card-header">
+				<h3>Tambah Data Mahasiswa</h3>
+			</div>
+			<div class="card-body">
+				<form method="post" action="sv_addMhs.php" enctype="multipart/form-data">
+					<div class="form-group">
+						<label for="nim">NIM:</label>
+						<input type="text" class="form-control" id="nim" name="nim" maxlength="14" required>
+						<span id="nimError" class="error"></span>
+					</div>
+
+					<div class="form-group">
+						<label for="nama">Nama:</label>
+						<input type="text" class="form-control" id="nama" name="nama" required>
+					</div>
+
+					<div class="form-group">
+						<label for="jurusan">Jurusan:</label>
+						<select class="form-control" id="jurusan" name="jurusan" required>
+							<option value="">Pilih Jurusan</option>
+							<option value="Teknik Informatika">Teknik Informatika</option>
+							<option value="Sistem Informasi">Sistem Informasi</option>
+							<option value="Teknik Komputer">Teknik Komputer</option>
+							<option value="Manajemen">Manajemen</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="foto">Foto:</label>
+						<input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+						<small class="form-text text-muted">Upload foto dengan format JPG, PNG, atau GIF</small>
+					</div>
+
+					<div class="form-group mt-3">
+						<button type="submit" class="btn btn-primary">Simpan</button>
+						<button type="button" class="btn btn-secondary" onclick="window.location.href='ajaxupdateMhs.php'">Batal</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
 	<script>
 		$(document).ready(function() {
-			// membuat fungsi untuk mengecek NIM pada tabel mhs di database akademik12345
 			function checkNIMExists(nim) {
 				$.ajax({
-					// memanggil file cek_data_kembar.php
 					url: 'cek_data_kembar.php',
 					type: 'POST',
 					data: {
@@ -51,20 +97,15 @@
 			function validateNIM() {
 				var nim = $("#nim").val();
 				var errorMsg = "";
-				// Cek apakah NIM kosong
 				if (nim.trim() === "") {
 					errorMsg = "* NIM tidak boleh kosong!";
 					showError(errorMsg);
 					return false;
-				}
-				// Cek panjang NIM
-				else if (nim.length !== 14) {
+				} else if (nim.length !== 14) {
 					errorMsg = "* NIM harus terdiri dari 14 karakter (contoh: A12.2023.12345)";
 					showError(errorMsg);
 					return false;
-				}
-				// Cek format NIM
-				else if (!/^[A-Z]\d{2}\.\d{4}\.\d{5}$/.test(nim)) {
+				} else if (!/^[A-Z]\d{2}\.\d{4}\.\d{5}$/.test(nim)) {
 					errorMsg = "* Format NIM tidak sesuai. Gunakan format: A12.2023.12345";
 					showError(errorMsg);
 					return false;
@@ -80,140 +121,21 @@
 				$("#nimError").hide();
 			}
 
-			function formatNIM(input) {
-				var value = input.value.replace(/\D/g, '');
-				var formattedValue = '';
-				if (value.length > 0) {
-					if (!/[A-Z]/.test(input.value[0])) {
-						formattedValue = 'A';
-					} else {
-						formattedValue = input.value[0];
-					}
-					if (value.length > 2) {
-						formattedValue += value.substr(0, 2) + '.';
-					} else {
-						formattedValue += value;
-					}
-					if (value.length > 6) {
-						formattedValue += value.substr(2, 4) + '.';
-					} else if (value.length > 2) {
-						formattedValue += value.substr(2);
-					}
-					if (value.length > 6) {
-						formattedValue += value.substr(6, 5);
-					}
-				}
-				input.value = formattedValue.substr(0, 14);
-			}
-			// Event listeners
-			$("#nim").on("blur", function() {
+			$("#nim").on('blur', function() {
 				if (validateNIM()) {
 					checkNIMExists($(this).val());
 				}
-			}).on("keypress", function(event) {
-				if (event.which === 13) {
-					event.preventDefault();
-					if (validateNIM()) {
-						checkNIMExists($(this).val());
-					}
-				}
-			}).on("input", function() {
-				formatNIM(this);
-				hideError();
 			});
-			// Form submission with AJAX
-			$("#mahasiswaForm").on("submit", function(event) {
-				//Menghentikan perilaku submit form standar
-				//Memungkinkan proses submit data melalui JavaScript
-				event.preventDefault();
-				//Memastikan NIM valid sebelum mengirim data ke server
+
+			$("form").on('submit', function(e) {
 				if (!validateNIM()) {
+					e.preventDefault();
 					return false;
 				}
-				//Membuat objek FormData untuk menangkap semua data form
-				var formData = new FormData(this);
-				$.ajax({
-					// memanggil file sv_addMhs.php
-					url: 'sv_addMhs.php',
-					type: 'POST',
-					data: formData,
-					//untuk mendukung upload file
-					processData: false,
-					contentType: false,
-					success: function(response) {
-						$("#ajaxResponse").html(response);
-					},
-					error: function() {
-						$("#ajaxResponse").html("Terjadi kesalahan saat mengirim data.");
-					}
-				});
 			});
 		});
 	</script>
-</head>
-
-<body>
-	<?php
-	require "head.html";
-	?>
-	<div class="utama">
-		<br><br><br>
-		<h3>TAMBAH DATA MAHASISWA</h3>
-		<div class="alert alert-success alert-dismissible" id="success" style="display:none;">
-			<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-		</div>
-		<form method="post" action="sv_addMhs.php" enctype="multipart/form-data">
-			<div class="form-group">
-				<label for="nim">NIM:</label>
-				<input class="form-control" type="text" name="nim" id="nim" required>
-			</div>
-			<div class="form-group">
-				<label for="nama">Nama:</label>
-				<input class="form-control" type="text" name="nama" id="nama">
-			</div>
-			<div class="form-group">
-				<label for="email">Email:</label>
-				<input class="form-control" type="email" name="email" id="email">
-			</div>
-			<div class="form-group">
-				<label for="foto">Foto</label>
-				<input class="form-control" type="file" name="foto" id="foto">
-			</div>
-			<div>
-				<button type="submit" class="btn btn-primary" value="Simpan">Simpan</button>
-			</div>
-		</form>
-	</div>
-	<!--
-	<script>
-		$(document).ready(function(){
-			$('#butsave').on('click',function(){			
-				$('#butsave').attr('disabled', 'disabled');
-				var nim 	= $('#nim').val();
-				var nama	= $('#nama').val();
-				var email 	= $('#email').val();
-				
-				$.ajax({
-					type	: "POST",
-					url		: "sv_addMhs.php",
-					data	: {
-								nim:nim,
-								nama:nama,
-								email:email
-							  },
-					contentType	:"undefined",					
-					success : function(dataResult){						
-						alert('success');
-						$("#butsave").removeAttr("disabled");
-						$('#fupForm').find('input:text').val('');
-						$("#success").show();
-						$('#success').html(dataResult);	
-					}	   
-				});
-			});
-		});
-	</script>
-	-->
 </body>
 
 </html>
+`

@@ -1,174 +1,163 @@
+
+<?php
+require "fungsi.php";
+
+$jmlDataPerHal = 5;
+$kosong = false;
+
+$sqlCount = "SELECT COUNT(*) as total FROM mhs";
+$resultCount = mysqli_query($koneksi, $sqlCount);
+$data = mysqli_fetch_assoc($resultCount);
+$jmlData = $data['total'];
+
+$jmlHal = ceil($jmlData / $jmlDataPerHal);
+
+if (isset($_GET['hal'])) {
+	$halAktif = $_GET['hal'];
+} else {
+	$halAktif = 1;
+}
+
+$awalData = ($jmlDataPerHal * $halAktif) - $jmlDataPerHal;
+
+if ($jmlData == 0) {
+	$kosong = true;
+}
+?>
+
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Sistem Informasi Akademik::Daftar Mahasiswa</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="bootstrap533/css/bootstrap.css">
-		<link rel="stylesheet" type="text/css" href="css/styleku.css">
-		<script src="bootstrap4/jquery/3.3.1/jquery-3.3.1.js"></script>
-		<script src="bootstrap4/js/bootstrap.js"></script>
-		<!-- Use fontawesome 5-->
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-	</head>
-	<body>
-		<?php
-			//memanggil file berisi fungsi2 yang sering dipakai
-			require "fungsi.php";
-			require "head.html";
 
-			/*	---- cetak data per halaman ---------	*/
+<head>
+	<title>Sistem Informasi Akademik::Daftar Mahasiswa</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-			//--------- konfigurasi
-			//jumlah data per halaman
-			$jmlDataPerHal = 5;
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/styleku.css">
 
-			//pencarian data
-			if (isset($_POST['cari'])){
-				$cari=$_POST['cari'];
-				$sql="select * from mhs where nim like'%$cari%' or
-									nama like '%$cari%' or
-									email like '%$cari%'";
-			}else{
-				$sql="select * from mhs";		
-			}
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-			$qry = mysqli_query($koneksi,$sql) or die(mysqli_error($koneksi));
-			$jmlData = mysqli_num_rows($qry);
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-			// CEIL() digunakan untuk mengembalikan nilai integer terkecil yang lebih besar dari 
-			//atau sama dengan angka.
-			$jmlHal = ceil($jmlData / $jmlDataPerHal);
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+</head>
 
-			if (isset($_GET['hal'])){
-				$halAktif=$_GET['hal'];
-			}else{
-				$halAktif=1;
-			}
+<body>
+	<div class="container">
+		<div class="card">
+			<div class="card-header">
+				<h3>Data Mahasiswa</h3>
+			</div>
+			<div class="card-body">
+				<button type="button" class="btn btn-primary mb-3" onclick="window.location.href='addMhs.php'">Tambah</button>
 
-			$awalData=($jmlDataPerHal * $halAktif)-$jmlDataPerHal;
-
-			//Jika tabel data kosong
-			$kosong=false;
-			if (!$jmlData){
-				$kosong=true;
-			}
-
-			//Klausa LIMIT digunakan untuk membatasi jumlah baris yang dikembalikan oleh pernyataan SELECT
-			//data berdasar pencarian atau tidak
-			if (isset($_POST['cari'])){
-				$cari=$_POST['cari'];
-				$sql="select * from mhs where nim like'%$cari%' or
-									nama like '%$cari%' or
-									email like '%$cari%'
-									limit $awalData,$jmlDataPerHal";
-			}else{
-				$sql="select * from mhs limit $awalData,$jmlDataPerHal";		
-			}
-
-			//Ambil data untuk ditampilkan
-			$hasil=mysqli_query($koneksi,$sql) or die(mysqli_error($koneksi));
-
-		?>
-		<div class="utama">
-			<h2 class="text-center">Daftar Mahasiswa</h2>
-			<div class="text-center"><a href="printmhs.php"><span class="fas fa-print">&nbsp;Print</span></a></div>
-			<span class="float-left">
-				<a class="btn btn-success" href="addMhs.php">Tambah Data</a>
-			</span>
-			<span class="float-right">
-				<form action="" method="post" class="form-inline">
-					<button class="btn btn-success" type="submit" name="cari" id="tombol-cari"> Cari</button>
-					<input class="form-control mr-2 ml-2" type="text" name="cari" placeholder="cari data mahasiswa..." autofocus autocomplete="off" id="keyword">
+				<form method="post">
+					<div class="input-group mb-3">
+						<input type="text" name="cari" class="form-control" placeholder="Ketik nama atau NIM...">
+						<button class="btn btn-primary" type="submit">Cari</button>
+					</div>
 				</form>
-			</span>
-			<br><br>
 
-			<ul class="pagination">
-				<?php
-					//navigasi pagination
-					//cetak navigasi back
-					if ($halAktif>1){
-						$back=$halAktif-1;
-						//$back=$halAktif;
-						echo "<li class='page-item'><a class='page-link' href=?hal=$back>&laquo;</a></li>";
-					}
-					//cetak angka halaman
-					for($i=1;$i<=$jmlHal;$i++){
-						if ($i==$halAktif){
-							echo "<li class='page-item'><a class='page-link' href=?hal=$i style='font-weight:bold;color:red;'>$i</a></li>";
-						}else{
-							
-							echo "<li class='page-item'><a class='page-link' href=?hal=$i>$i</a></li>";
-						}	
-					}
-					//cetak navigasi forward
-					if ($halAktif<$jmlHal){
-						$forward=$halAktif+1;
-						echo "<li class='page-item'><a class='page-link' href=?hal=$forward>&raquo;</a></li>";
-					}
-				?>
-			</ul>	
-
-		<div id="container">		
-			<!-- Cetak data dengan tampilan tabel -->
-			<table class="table table-hover">
-				<thead class="thead-light">
-					<tr>
-						<th>No.</th>
-						<th>NIM</th>
-						<th>Nama</th>
-						<th>Email</th>
-						<th>Foto</th>
-						<th>Aksi</th>
-					</tr>
-				</thead>
-				
-				<tbody>
-					<?php
-						//jika data tidak ada
-						if ($kosong){
-					?>
-						<tr><th colspan="6">
-							<div class="alert alert-info alert-dismissible fade show text-center">
-							<!--<button type="button" class="close" data-dismiss="alert">&times;</button>-->
-							Data tidak ada
-							</div>
-						</th></tr>
-					<?php
-					}else{	
-						// $awalData==0, data kalau tampail di page pertama, maka 
-						if($awalData==0){
-							$no=$awalData+1;
-						}else{
-							//$no=$awalData;
-							$no=$awalData+1;
-						}
-						while($row=mysqli_fetch_assoc($hasil)){
-					?>	
+				<table class="table table-striped table-hover">
+					<thead>
 						<tr>
-							<td><?php echo $no?></td>
-							<td><?php echo $row["nim"]?></td>
-							<td><?php echo $row["nama"]?></td>
-							<td><?php echo $row["email"]?></td>
-							<td><img src="<?php echo "foto/".$row["foto"]?>" height="50"></td>
-							<td>
-								<a class="btn btn-outline-primary btn-sm" href="editMhs.php?kode=<?php echo $row['id']?>">Edit</a>
-								<a class="btn btn-outline-danger btn-sm" href="hpsMhs.php?kode=<?php echo $row["id"]?>" id="linkHps" onclick="return confirm('Yakin dihapus nih?')">Hapus</a>
-							</td>
+							<th>ID</th>
+							<th>NIM</th>
+							<th>Nama</th>
+							<th>Jurusan</th>
+							<th>Foto</th>
+							<th>Aksi</th>
 						</tr>
-								<?php 
-									$no++;
-						}
-					}
-							?>
-				</tbody>
-			</table>
-			
-		</div>	
-		
-	</div>
-	<script src="js/script.js"> </script>
+					</thead>
+					<tbody>
+						<?php
+						if (!$kosong) {
+							if (isset($_POST['cari'])) {
+								$cari = $_POST['cari'];
+								$sql = "SELECT * FROM mhs WHERE 
+                                    nim LIKE '%$cari%' OR 
+                                    nama LIKE '%$cari%' OR  
+                                    jurusan LIKE '%$cari%' 
+                                    ORDER BY id 
+                                    LIMIT $awalData, $jmlDataPerHal";
+							} else {
+								$sql = "SELECT * FROM mhs ORDER BY id LIMIT $awalData, $jmlDataPerHal";
+							}
 
+							$hasil = mysqli_query($koneksi, $sql) or die(mysqli_error($koneksi));
+							while ($row = mysqli_fetch_assoc($hasil)) {
+						?>
+								<tr>
+									<td><?php echo $row["id"] ?></td>
+									<td><?php echo $row["nim"] ?></td>
+									<td><?php echo $row["nama"] ?></td>
+									<td><?php echo $row["jurusan"] ?></td>
+									<td>
+										<?php
+										if ($row["filepath"]) {
+											echo "<img src='" . $row["filepath"] . "' height='50'>";
+										} else {
+											echo "No Image";
+										}
+										?>
+									</td>
+									<td>
+										<a class="btn btn-outline-primary btn-sm" href="editMhs.php?id=<?php echo $row['id'] ?>">Ubah</a>
+										<a class="btn btn-outline-danger btn-sm" href="hpsMhs.php?id=<?php echo $row['id'] ?>" onclick="return confirm('Yakin menghapus data ini?')">Hapus</a>
+									</td>
+								</tr>
+						<?php
+							}
+						}
+						?>
+					</tbody>
+				</table>
+
+				<nav aria-label="Page navigation">
+					<ul class="pagination justify-content-center">
+						<?php
+						for ($i = 1; $i <= $jmlHal; $i++) {
+							if ($i == $halAktif) {
+								echo "<li class='page-item active'><a class='page-link' href='?hal=$i'>$i</a></li>";
+							} else {
+								echo "<li class='page-item'><a class='page-link' href='?hal=$i'>$i</a></li>";
+							}
+						}
+						?>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('input[name="cari"]').keyup(function() {
+				var keyword = $(this).val();
+				$.ajax({
+					type: "POST",
+					url: "searchMhs.php",
+					data: {
+						keyword: keyword,
+						halAktif: <?php echo $halAktif; ?>,
+						jmlDataPerHal: <?php echo $jmlDataPerHal; ?>
+					},
+					success: function(data) {
+						$("tbody").html(data);
+					}
+				});
+			});
+
+			$('form').submit(function(e) {
+				e.preventDefault();
+			});
+		});
+	</script>
 </body>
-</html>	
+
+</html>
