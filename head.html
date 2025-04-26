@@ -1,0 +1,160 @@
+<?php
+require_once 'fungsi.php';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Mahasiswa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="css/styleku.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4 class="mb-0">Data Mahasiswa</h4>
+        </div>
+        <div class="card-body">
+          <!-- Search Form -->
+          <div class="search-container mb-4">
+            <form id="searchForm">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="searchInput">Cari Mahasiswa</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Nama atau NIM...">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Rentang Tanggal Upload</label>
+                    <div class="date-range-container">
+                      <input type="date" class="form-control" id="startDate">
+                      <span class="align-self-center">sampai</span>
+                      <input type="date" class="form-control" id="endDate">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="fas fa-search"></i> Cari
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-container">
+            <div class="loading-overlay">
+              <div class="loading-message">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Mencari data...</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>NIM</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Jurusan</th>
+                    <th>Foto</th>
+                    <th>Tanggal Upload</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <!-- Data will be loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      function showLoading() {
+        $('.loading-overlay').fadeIn(200).css('display', 'flex');
+      }
+
+      function hideLoading() {
+        $('.loading-overlay').fadeOut(200);
+      }
+
+      function loadData(params = {}) {
+        showLoading();
+
+        $.ajax({
+          url: 'search_mhs.php',
+          type: 'POST',
+          data: params,
+          success: function (response) {
+            hideLoading();
+            $('#tableBody').hide().html(response).fadeIn(500);
+            $('#tableBody tr').addClass('table-fade');
+          },
+          error: function (xhr, status, error) {
+            hideLoading();
+            alert('Terjadi kesalahan: ' + error);
+          }
+        });
+      }
+
+      // Initial load
+      loadData();
+
+      // Search form submission
+      $('#searchForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const searchParams = {
+          search: $('#searchInput').val(),
+          startDate: $('#startDate').val(),
+          endDate: $('#endDate').val()
+        };
+
+        loadData(searchParams);
+      });
+
+      // Real-time search
+      let searchTimeout;
+      $('#searchInput').on('keyup', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          $('#searchForm').submit();
+        }, 500);
+      });
+
+      // Date change handlers
+      $('#startDate, #endDate').on('change', function () {
+        $('#searchForm').submit();
+      });
+    });
+  </script>
+
+</body>
+
+</html>

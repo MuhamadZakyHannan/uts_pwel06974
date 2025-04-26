@@ -1,16 +1,16 @@
-
 <?php
 require "fungsi.php";
 
-// Cek apakah ada kiriman form dari method post
+// Cek apakah ada kiriman form dari method POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$id = $_POST["id"];
 	$nama = htmlspecialchars($_POST["nama"]);
 	$jurusan = htmlspecialchars($_POST["jurusan"]);
 	$uploadOk = 1;
 
-	// Update data tanpa foto jika tidak ada file yang diupload
+	// Cek apakah ada foto yang diupload
 	if (!isset($_FILES["foto"]) || $_FILES["foto"]["error"] == 4) {
+		// Update data tanpa foto jika tidak ada file yang diupload
 		$sql = "UPDATE mhs SET 
                 nama = '$nama',
                 jurusan = '$jurusan'
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		} else {
 			echo "<script>
                     alert('Gagal mengupdate data: " . mysqli_error($koneksi) . "');
-                    window.location.href='editMhs.php?kode=" . $id . "';
+                    window.location.href='editMhs.php?kode=" . $id . "'; 
                   </script>";
 		}
 	} else {
@@ -33,23 +33,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$thumbFolder = "gambar_thumbnail/thumbs/";
 
 		// Get old file info
-		$sql = "SELECT filename, filepath, thumbpath FROM mhs WHERE id='$id'";
+		$sql = "SELECT filename, filepath, thumbpath, uploaded_at FROM mhs WHERE id='$id'";
 		$result = mysqli_query($koneksi, $sql);
 		$row = mysqli_fetch_assoc($result);
 
-		// Delete old files if they exist
-		if ($row) {
-			if (file_exists($row['filepath'])) unlink($row['filepath']);
-			if (file_exists($row['thumbpath'])) unlink($row['thumbpath']);
+		// Jika belum ada foto sebelumnya, buat foto baru
+		if (!$row) {
+			$newFileName = $id . "_" . time() . ".jpg";
+		} else {
+			$newFileName = $id . "_edit_" . time() . ".jpg";
 		}
 
-		// Process new upload
-		$fileExtension = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
-		$newFileName = "mhs_" . $id . "_" . time() . "." . $fileExtension;
 		$targetFile = $mainFolder . $newFileName;
 		$thumbFile = $thumbFolder . "thumb_" . $newFileName;
 
-		// Check file size
+		// Proses upload file foto
+		$fileExtension = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
+
+		// Validasi ukuran file
 		if ($_FILES["foto"]["size"] > 2000000) {
 			echo "<script>
                     alert('File terlalu besar (max 2MB)');
@@ -58,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			exit();
 		}
 
-		// Allow certain file formats
+		// Validasi format file
 		if ($fileExtension != "jpg" && $fileExtension != "jpeg" && $fileExtension != "png" && $fileExtension != "gif") {
 			echo "<script>
                     alert('Hanya file JPG, JPEG, PNG & GIF yang diperbolehkan');
@@ -67,8 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			exit();
 		}
 
+		// Pindahkan file ke folder tujuan
 		if (move_uploaded_file($_FILES["foto"]["tmp_name"], $targetFile)) {
-			// Create thumbnail
+			// Membuat thumbnail
 			list($width, $height) = getimagesize($targetFile);
 			$new_width = 200;
 			$new_height = floor($height * ($new_width / $width));
@@ -108,13 +110,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			imagedestroy($source);
 			imagedestroy($thumb);
 
-			// Update database with new file info
+			// Hapus file lama jika sedang edit
+			if ($row) {
+				if (file_exists($row['filepath'])) {
+					unlink($row['filepath']);
+				}
+				if (file_exists($row['thumbpath'])) {
+					unlink($row['thumbpath']);
+				}
+			}
+
+			// Update data dengan foto baru
 			$sql = "UPDATE mhs SET 
                     nama = '$nama',
                     jurusan = '$jurusan',
                     filename = '$newFileName',
                     filepath = '$targetFile',
-                    thumbpath = '$thumbFile'
+                    thumbnail = '" . basename($thumbFile) . "',
+                    thumbpath = '$thumbFile',
+                    width = $new_width,
+                    height = $new_height,
+                    uploaded_at = NOW()
                     WHERE id = '$id'";
 
 			if (mysqli_query($koneksi, $sql)) {
@@ -125,7 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			} else {
 				echo "<script>
                         alert('Gagal mengupdate data: " . mysqli_error($koneksi) . "');
-                        window.location.href='editMhs.php?kode=" . $id . "';
+                        window.location.href='editMhs.php?kode=" . $id . "'; 
                       </script>";
 			}
 		} else {
@@ -140,4 +156,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 mysqli_close($koneksi);
-?>

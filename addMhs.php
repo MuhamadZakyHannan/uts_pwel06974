@@ -1,73 +1,65 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-	<title>Sistem Informasi Akademik::Tambah Data Mahasiswa</title>
-	<meta charset="utf-8">
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="bootstrap533/css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="css/styleku.css">
-	<script src="bootstrap4/jquery/3.3.1/jquery-3.3.1.js"></script>
-	<script src="bootstrap4/js/bootstrap.js"></script>
-	<style>
-		.error {
-			color: red;
-			font-size: 0.9em;
-			display: none;
-		}
-
-		#nim {
-			width: 150px;
-		}
-
-		#ajaxResponse {
-			margin-top: 15px;
-		}
-	</style>
+	<title>Sistem Informasi Akademik :: Tambah Data Mahasiswa</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/styleku.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
-	<div class="container">
-		<div class="card">
-			<div class="card-header">
-				<h3>Tambah Data Mahasiswa</h3>
-			</div>
-			<div class="card-body">
-				<form method="post" action="sv_addMhs.php" enctype="multipart/form-data">
-					<div class="form-group">
-						<label for="nim">NIM:</label>
-						<input type="text" class="form-control" id="nim" name="nim" maxlength="14" required>
-						<span id="nimError" class="error"></span>
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-8 col-md-10">
+				<div class="card shadow-lg border-0 rounded">
+					<div class="card-header bg-primary text-white text-center">
+						<h3>Tambah Data Mahasiswa</h3>
 					</div>
+					<div class="card-body">
+						<form method="post" action="sv_addMhs.php" enctype="multipart/form-data">
+							<div class="mb-3">
+								<label for="nim" class="form-label">NIM:</label>
+								<input type="text" class="form-control" id="nim" name="nim" maxlength="14" required>
+								<span id="nimError" class="text-danger"></span>
+							</div>
 
-					<div class="form-group">
-						<label for="nama">Nama:</label>
-						<input type="text" class="form-control" id="nama" name="nama" required>
-					</div>
+							<div class="mb-3">
+								<label for="nama" class="form-label">Nama:</label>
+								<input type="text" class="form-control" id="nama" name="nama" required>
+							</div>
 
-					<div class="form-group">
-						<label for="jurusan">Jurusan:</label>
-						<select class="form-control" id="jurusan" name="jurusan" required>
-							<option value="">Pilih Jurusan</option>
-							<option value="Teknik Informatika">Teknik Informatika</option>
-							<option value="Sistem Informasi">Sistem Informasi</option>
-							<option value="Teknik Komputer">Teknik Komputer</option>
-							<option value="Manajemen">Manajemen</option>
-						</select>
-					</div>
+							<div class="mb-3">
+								<label for="jurusan" class="form-label">Jurusan:</label>
+								<select class="form-select" id="jurusan" name="jurusan" required>
+									<option value="">-- Pilih Jurusan --</option>
+									<option value="Teknik Informatika">A11 - Teknik Informatika</option>
+									<option value="Sistem Informasi">A12 - Sistem Informasi</option>
+									<option value="Desain Komunikasi Visual">A14 - Desain Komunikasi Visual</option>
+									<option value="Teknik Informatika D3">A22 - Teknik Informatika D3</option>
+									<option value="Broadcasting">A24 - Broadcasting</option>
+									<option value="Film dan Televisi">A16 - Film dan Televisi</option>
+									<option value="Animasi">A17 - Animasi</option>
+									<option value="Ilmu Komunikasi">A18 - Ilmu Komunikasi</option>
+								</select>
+							</div>
 
-					<div class="form-group">
-						<label for="foto">Foto:</label>
-						<input type="file" class="form-control" id="foto" name="foto" accept="image/*">
-						<small class="form-text text-muted">Upload foto dengan format JPG, PNG, atau GIF</small>
-					</div>
+							<div class="mb-3">
+								<label for="foto" class="form-label">Foto:</label>
+								<input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+								<small class="form-text text-muted">Upload foto dengan format JPG, PNG, atau GIF</small>
+							</div>
 
-					<div class="form-group mt-3">
-						<button type="submit" class="btn btn-primary">Simpan</button>
-						<button type="button" class="btn btn-secondary" onclick="window.location.href='ajaxupdateMhs.php'">Batal</button>
+							<div class="d-flex justify-content-between">
+								<button type="submit" class="btn btn-primary">Simpan</button>
+								<button type="button" class="btn btn-secondary" onclick="window.location.href='ajaxupdateMhs.php'">Batal</button>
+							</div>
+						</form>
 					</div>
-				</form>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -83,9 +75,8 @@
 					},
 					success: function(response) {
 						if (response === 'exists') {
-							showError("* Data sudah ada, silahkan isikan yang lain");
+							showError("* NIM sudah terdaftar, silakan masukkan NIM lain.");
 							$("#nim").val("").focus();
-							return false;
 						} else {
 							hideError();
 							$("#nama").focus();
@@ -130,7 +121,6 @@
 			$("form").on('submit', function(e) {
 				if (!validateNIM()) {
 					e.preventDefault();
-					return false;
 				}
 			});
 		});
@@ -138,4 +128,3 @@
 </body>
 
 </html>
-`

@@ -1,26 +1,27 @@
 <?php
-//membuat koneksi ke database mysql
- //   $koneksi=mysqli_connect('localhost','root','','pwlgenap2019-akademik');
- // koneksi bisa seperti dibari atas ini atau dibawah 
-   
-$servername = "localhost";
-$username = "root";
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$host = "localhost";
+$user = "root";
 $password = "";
 $database = "akademik06974";
 
+$koneksi = mysqli_connect($host, $user, $password, $database);
 
- 
-// Create connection
- 
-$koneksi = mysqli_connect($servername, $username, $password, $database);
- 
-// Check connection
- 
-if (!$koneksi) {
- 
-    die("Connection failed: " . mysqli_connect_error());
- 
+if (mysqli_connect_errno()) {
+    die("Koneksi database gagal: " . mysqli_connect_error());
 }
-//echo "Connected successfully";
-//mysqli_close($conn);
-?>
+
+mysqli_set_charset($koneksi, "utf8");
+
+function sanitize($data)
+{
+    global $koneksi;
+    return mysqli_real_escape_string($koneksi, trim($data));
+}
+
+function formatDate($date)
+{
+    return date('d/m/Y H:i', strtotime($date));
+}
