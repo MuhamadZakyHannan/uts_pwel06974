@@ -19,73 +19,15 @@ $awalData = ($jmlDataPerHal * $halAktif) - $jmlDataPerHal;
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="bootstrap533/css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="css/styleku.css">
-	<script src="bootstrap4/jquery/3.3.1/jquery-3.3.1.js"></script>
-	<script src="bootstrap4/js/bootstrap.js"></script>
-	<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-	<style>
-		body {
-			background: linear-gradient(135deg, #e3f2fd, #ffffff);
-			min-height: 100vh;
-		}
-
-		.container {
-			background-color: #ffffff;
-			border-radius: 10px;
-			padding: 30px;
-			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-		}
-
-		/* Hapus garis-garis tabel */
-		table {
-			border-collapse: collapse;
-			width: 100%;
-		}
-
-		table th {
-			background-color: #0d6efd;
-			color: #ffffff;
-			text-align: center;
-			padding: 12px;
-			border: none;
-		}
-
-		table td {
-			padding: 12px;
-			border: none;
-			border-bottom: 1px solid #f1f1f1;
-			vertical-align: middle !important;
-		}
-
-		tr:hover td {
-			background-color: #f0f8ff;
-		}
-
-		.fade-in {
-			animation: fadeIn 0.5s ease-in-out;
-		}
-
-		@keyframes fadeIn {
-			from {
-				opacity: 0;
-			}
-
-			to {
-				opacity: 1;
-			}
-		}
-
-		.btn-primary {
-			background-color: #0d6efd;
-			border-color: #0d6efd;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
 	<div class="container py-5 my-4">
 		<div class="text-center mb-5">
 			<h1 class="fw-bold">Data Mahasiswa</h1>
+			<h5 class="fw-light">Muhamad Zaky Hannan Alim</h5>
+			<h5 class="fw-light">A12.2023.06974</h5>
 		</div>
 
 		<div class="row mb-4">
@@ -123,7 +65,7 @@ $awalData = ($jmlDataPerHal * $halAktif) - $jmlDataPerHal;
 		</div>
 
 		<nav class="mt-5">
-			<ul class="pagination justify-content-center gap-1">
+			<ul class="pagination justify-content-center gap-2">
 				<?php
 				for ($i = 1; $i <= $jmlHal; $i++) {
 					$activeClass = ($i == $halAktif) ? 'active' : '';

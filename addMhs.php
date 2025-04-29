@@ -2,13 +2,12 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
+	<title>Tambah Data Mahasiswa</title>
+	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Sistem Informasi Akademik :: Tambah Data Mahasiswa</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/styleku.css">
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="bootstrap533/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
@@ -20,7 +19,7 @@
 						<h3>Tambah Data Mahasiswa</h3>
 					</div>
 					<div class="card-body">
-						<form method="post" action="sv_addMhs.php" enctype="multipart/form-data">
+						<form method="post" action="sv_addMhs.php" enctype="multipart/form-data" id="addMhsForm">
 							<div class="mb-3">
 								<label for="nim" class="form-label">NIM:</label>
 								<input type="text" class="form-control" id="nim" name="nim" maxlength="14" required>
@@ -49,7 +48,7 @@
 
 							<div class="mb-3">
 								<label for="foto" class="form-label">Foto:</label>
-								<input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+								<input type="file" class="form-control" id="foto" name="foto" accept="image/*" required>
 								<small class="form-text text-muted">Upload foto dengan format JPG, PNG, atau GIF</small>
 							</div>
 
@@ -118,9 +117,13 @@
 				}
 			});
 
-			$("form").on('submit', function(e) {
-				if (!validateNIM()) {
+			$("#addMhsForm").on('submit', function(e) {
+				var foto = $("#foto").val();
+				if (!validateNIM() || !foto) {
 					e.preventDefault();
+					if (!foto) {
+						alert("Foto mahasiswa harus diupload.");
+					}
 				}
 			});
 		});
